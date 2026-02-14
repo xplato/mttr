@@ -1,5 +1,6 @@
-import { Button } from "./ui/button";
 import type { ServoInfo } from "@/lib/servo";
+
+import { Button } from "./ui/button";
 
 interface ServoSidebarProps {
   servos: ServoInfo[];
@@ -14,9 +15,7 @@ export function ServoSidebar({
 }: ServoSidebarProps) {
   return (
     <div className="bg-sidebar border-border flex h-full w-52 flex-col border-r select-none">
-      <div className="h-10 shrink-0" data-tauri-drag-region />
-
-      <div className="border-border flex shrink-0 items-center px-3 pb-2 border-b">
+      <div className="border-border flex shrink-0 items-center border-b px-3 py-2">
         <p className="text-sidebar-foreground text-sm font-medium">Servos</p>
       </div>
 
