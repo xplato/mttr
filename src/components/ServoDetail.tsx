@@ -7,12 +7,10 @@ interface ServoDetailProps {
 
 export function ServoDetail({ servo, config }: ServoDetailProps) {
   return (
-    <div className="flex h-full flex-1 flex-col">
-      <div className="h-10 shrink-0" data-tauri-drag-region />
-
+    <div className="flex h-full flex-1 flex-col p-6">
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto w-full max-w-2xl px-6 pb-6">
-          <h2 className="text-foreground mb-1 text-xl font-semibold tracking-tight">
+        <div className="mx-auto w-full max-w-2xl pb-6">
+          <h2 className="text-foreground mb-1 text-xl leading-none font-semibold tracking-tight">
             Servo ID {servo.id}
           </h2>
           <p className="text-muted-foreground mb-6 text-sm">
