@@ -73,6 +73,16 @@ function AppContent() {
           <div
             data-tauri-drag-region
             className="flex flex-row items-center justify-start pl-2"
+          ></div>
+          <div
+            data-tauri-drag-region
+            className="flex flex-row items-center justify-center"
+          >
+            <p className="text-sm">MTTR</p>
+          </div>
+          <div
+            data-tauri-drag-region
+            className="flex flex-row items-center justify-end gap-1 pr-2"
           >
             {hasServos && (
               <Button
@@ -85,17 +95,6 @@ function AppContent() {
                 <RadarIcon />
               </Button>
             )}
-          </div>
-          <div
-            data-tauri-drag-region
-            className="flex flex-row items-center justify-center"
-          >
-            <p className="text-sm">MTTR</p>
-          </div>
-          <div
-            data-tauri-drag-region
-            className="flex flex-row items-center justify-end pr-2"
-          >
             <Button
               onClick={() => setShowSettings(true)}
               size="icon-sm"
