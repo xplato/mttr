@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { VelocityControl } from "./VelocityControl";
 
 interface ServoDetailProps {
   servo: ServoInfo;
@@ -41,11 +42,25 @@ interface FieldState {
 export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
   function ServoDetail({ servo, config, onLoadingChange, onServoUpdate }, ref) {
     const model = getModel(servo.model_number);
-    const idAddress = useMemo(
-      () =>
-        model?.areas.flatMap((a) => a.fields).find((f) => f.name === "ID")
-          ?.address,
+    const allFields = useMemo(
+      () => model?.areas.flatMap((a) => a.fields) ?? [],
       [model],
+    );
+    const idAddress = useMemo(
+      () => allFields.find((f) => f.name === "ID")?.address,
+      [allFields],
+    );
+    const operatingModeAddress = useMemo(
+      () => allFields.find((f) => f.name === "Operating Mode")?.address,
+      [allFields],
+    );
+    const goalVelocityField = useMemo(
+      () => allFields.find((f) => f.name === "Goal Velocity"),
+      [allFields],
+    );
+    const torqueEnableAddress = useMemo(
+      () => allFields.find((f) => f.name === "Torque Enable")?.address,
+      [allFields],
     );
     const [fieldStates, setFieldStates] = useState<Record<number, FieldState>>(
       {},
@@ -217,7 +232,7 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
             ))}
           </div>
         </div>
-        <div className="border-border shrink-0 border-l px-6 py-4">
+        <div className="border-border shrink-0 space-y-6 overflow-auto border-l px-6 py-4">
           <div className="flex flex-col items-start justify-start gap-1">
             <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
               Servo ID {servo.id}
@@ -232,6 +247,27 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
               )}
             </p>
           </div>
+
+          {/* Velocity control — only in Velocity Control mode with torque enabled */}
+          {operatingModeAddress !== undefined &&
+            fieldStates[operatingModeAddress]?.value === 1 &&
+            torqueEnableAddress !== undefined &&
+            fieldStates[torqueEnableAddress]?.value === 1 &&
+            goalVelocityField?.range && (
+              <VelocityControl
+                value={fieldStates[goalVelocityField.address]?.value ?? 0}
+                min={goalVelocityField.range[0]}
+                max={goalVelocityField.range[1]}
+                unit="rev/min"
+                onWrite={(v) =>
+                  handleWrite(
+                    goalVelocityField.address,
+                    goalVelocityField.size,
+                    v,
+                  )
+                }
+              />
+            )}
         </div>
       </div>
     );
