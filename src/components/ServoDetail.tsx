@@ -238,8 +238,7 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
               Servo ID {servo.id}
             </h2>
             <p className="text-muted-foreground text-sm">
-              {model.model_name} &middot; {config.port} &middot;{" "}
-              {config.baudrate.toLocaleString()} bps
+              {model.model_name}
               {loading && (
                 <span className="text-muted-foreground ml-2 animate-pulse">
                   Reading...
