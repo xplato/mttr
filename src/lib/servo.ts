@@ -5,6 +5,13 @@ export interface ServoInfo {
   model_number: number;
 }
 
+/** The connection parameters used for a successful scan. */
+export interface ConnectionConfig {
+  port: string;
+  protocol: string; // "1.0" | "2.0"
+  baudrate: number;
+}
+
 export type ScanEvent =
   | { event: "found"; data: ServoInfo }
   | { event: "progress"; data: { current: number; total: number } }
