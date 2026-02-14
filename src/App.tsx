@@ -21,6 +21,7 @@ import {
 } from "./components/ui/alert-dialog";
 import { Button } from "./components/ui/button";
 import { WelcomeScreen } from "./components/WelcomeScreen";
+import useTheme from "./hooks/useTheme";
 import { disconnect, type ConnectionConfig, type ServoInfo } from "./lib/servo";
 
 function AppContent() {
@@ -201,10 +202,12 @@ function AppContent() {
 }
 
 function App() {
+  const { theme } = useTheme();
+
   return (
     <>
       <Theme />
-      <Toaster />
+      <Toaster theme={theme as "light" | "dark" | "system"} />
       <main className="h-full">
         <AppContent />
       </main>

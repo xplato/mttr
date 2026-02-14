@@ -6,12 +6,7 @@ import {
   type ScanEvent,
   type ServoInfo,
 } from "@/lib/servo";
-import {
-  OctagonPauseIcon,
-  RefreshCwIcon,
-  SearchIcon,
-  XIcon,
-} from "lucide-react";
+import { OctagonPauseIcon, RefreshCwIcon, SearchIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "./ui/button";
