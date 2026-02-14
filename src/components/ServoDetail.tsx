@@ -111,22 +111,7 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
     }
 
     return (
-      <div className="flex h-full flex-1 flex-col overflow-hidden">
-        <div className="border-border shrink-0 border-b px-6 py-4">
-          <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
-            Servo ID {servo.id}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {model.model_name} &middot; {config.port} &middot;{" "}
-            {config.baudrate.toLocaleString()} bps
-            {loading && (
-              <span className="text-muted-foreground ml-2 animate-pulse">
-                Reading...
-              </span>
-            )}
-          </p>
-        </div>
-
+      <div className="grid h-full grid-cols-[auto_24rem] overflow-hidden">
         <div className="flex-1 overflow-auto py-4">
           {model.areas.map((area) => (
             <div key={area.name} className="mb-6">
@@ -194,6 +179,20 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
               </Table>
             </div>
           ))}
+        </div>
+        <div className="border-border shrink-0 border-l px-6 py-4">
+          <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
+            Servo ID {servo.id}
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            {model.model_name} &middot; {config.port} &middot;{" "}
+            {config.baudrate.toLocaleString()} bps
+            {loading && (
+              <span className="text-muted-foreground ml-2 animate-pulse">
+                Reading...
+              </span>
+            )}
+          </p>
         </div>
       </div>
     );
