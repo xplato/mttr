@@ -1,11 +1,11 @@
 import "./App.css";
 
-import { useCallback, useEffect, useState } from "react";
-import { BoltIcon, PowerOffIcon, RadarIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { BoltIcon, PowerOffIcon, RadarIcon, RefreshCwIcon } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { ScanDialog } from "./components/ScanDialog";
-import { ServoDetail } from "./components/ServoDetail";
+import { ServoDetail, type ServoDetailHandle } from "./components/ServoDetail";
 import { ServoSidebar } from "./components/ServoSidebar";
 import { SettingsPage } from "./components/settings";
 import Theme from "./components/settings/Theme";
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "./components/ui/alert-dialog";
 import { Button } from "./components/ui/button";
+import { Spinner } from "./components/ui/spinner";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import useTheme from "./hooks/useTheme";
@@ -34,6 +35,9 @@ function AppContent() {
   const [activeServo, setActiveServo] = useState<ServoInfo | null>(null);
   const [connectionConfig, setConnectionConfig] =
     useState<ConnectionConfig | null>(null);
+
+  const servoDetailRef = useRef<ServoDetailHandle>(null);
+  const [controlTableLoading, setControlTableLoading] = useState(false);
 
   const toggleSettings = useCallback(() => {
     setShowSettings((prev) => !prev);
@@ -115,6 +119,16 @@ function AppContent() {
             {hasServos && (
               <>
                 <Button
+                  onClick={() => servoDetailRef.current?.refresh()}
+                  disabled={controlTableLoading}
+                  size="icon-sm"
+                  variant="ghost"
+                  className="text-neutral-500"
+                  title="Refresh control table"
+                >
+                  {controlTableLoading ? <Spinner /> : <RefreshCwIcon />}
+                </Button>
+                <Button
                   onClick={() => setShowScanDialog(true)}
                   size="icon-sm"
                   variant="ghost"
@@ -156,7 +170,12 @@ function AppContent() {
           />
           <div className="flex flex-1 flex-col overflow-hidden">
             {activeServo ? (
-              <ServoDetail servo={activeServo} config={connectionConfig} />
+              <ServoDetail
+                ref={servoDetailRef}
+                servo={activeServo}
+                config={connectionConfig}
+                onLoadingChange={setControlTableLoading}
+              />
             ) : (
               <div className="flex flex-1 items-center justify-center">
                 <p className="text-muted-foreground text-sm">
