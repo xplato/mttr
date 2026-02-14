@@ -1,21 +1,32 @@
 import "./App.css";
 
 import { useCallback, useEffect, useState } from "react";
-import { BoltIcon, RadarIcon } from "lucide-react";
-import { Toaster } from "sonner";
+import { BoltIcon, PowerIcon, PowerOffIcon, RadarIcon } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 import { ScanDialog } from "./components/ScanDialog";
 import { ServoDetail } from "./components/ServoDetail";
 import { ServoSidebar } from "./components/ServoSidebar";
 import { SettingsPage } from "./components/settings";
 import Theme from "./components/settings/Theme";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./components/ui/alert-dialog";
 import { Button } from "./components/ui/button";
 import { WelcomeScreen } from "./components/WelcomeScreen";
-import type { ConnectionConfig, ServoInfo } from "./lib/servo";
+import { disconnect, type ConnectionConfig, type ServoInfo } from "./lib/servo";
 
 function AppContent() {
   const [showSettings, setShowSettings] = useState(false);
   const [showScanDialog, setShowScanDialog] = useState(false);
+  const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
 
   const [servos, setServos] = useState<ServoInfo[]>([]);
   const [activeServo, setActiveServo] = useState<ServoInfo | null>(null);
@@ -24,6 +35,18 @@ function AppContent() {
 
   const toggleSettings = useCallback(() => {
     setShowSettings((prev) => !prev);
+  }, []);
+
+  const handleDisconnect = useCallback(async () => {
+    try {
+      await disconnect();
+      setServos([]);
+      setActiveServo(null);
+      setConnectionConfig(null);
+      setShowDisconnectDialog(false);
+    } catch (err) {
+      toast.error(`Failed to disconnect: ${err}`);
+    }
   }, []);
 
   // Global keyboard shortcut: Cmd+, to toggle settings
@@ -85,15 +108,26 @@ function AppContent() {
             className="flex flex-row items-center justify-end gap-1 pr-2"
           >
             {hasServos && (
-              <Button
-                onClick={() => setShowScanDialog(true)}
-                size="icon-sm"
-                variant="ghost"
-                className="text-neutral-500"
-                title="Scan for servos"
-              >
-                <RadarIcon />
-              </Button>
+              <>
+                <Button
+                  onClick={() => setShowScanDialog(true)}
+                  size="icon-sm"
+                  variant="ghost"
+                  className="text-neutral-500"
+                  title="Scan for servos"
+                >
+                  <RadarIcon />
+                </Button>
+                <Button
+                  onClick={() => setShowDisconnectDialog(true)}
+                  size="icon-sm"
+                  variant="ghost"
+                  className="text-neutral-500"
+                  title="Disconnect"
+                >
+                  <PowerOffIcon />
+                </Button>
+              </>
             )}
             <Button
               onClick={() => setShowSettings(true)}
@@ -137,6 +171,28 @@ function AppContent() {
         onOpenChange={setShowScanDialog}
         onScanComplete={handleScanComplete}
       />
+
+      {/* Disconnect confirmation */}
+      <AlertDialog
+        open={showDisconnectDialog}
+        onOpenChange={setShowDisconnectDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disconnect?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will close the connection to the serial port and clear all
+              servos from the current session.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDisconnect}>
+              Disconnect
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tauri::ipc::Channel;
 
@@ -27,6 +27,57 @@ pub enum ScanEvent {
 #[derive(Default)]
 pub struct ScanState {
     pub cancel: Arc<AtomicBool>,
+}
+
+/// An open connection to the serial bus (either protocol version).
+/// The Bus is held to keep the serial port open; fields will be used for read/write commands.
+#[allow(dead_code)]
+pub enum BusConnection {
+    V1(dynamixel_sdk::v1::Bus),
+    V2(dynamixel_sdk::v2::Bus),
+}
+
+/// Managed state for the active serial connection.
+#[derive(Default)]
+pub struct ConnectionState {
+    pub bus: Mutex<Option<BusConnection>>,
+}
+
+/// Opens a persistent connection to the serial port.
+pub fn open_connection(
+    port: &str,
+    protocol: &str,
+    baudrate: u32,
+    state: &ConnectionState,
+) -> Result<(), String> {
+    let bus = match protocol {
+        "2.0" => {
+            let b = dynamixel_sdk::v2::new(port, baudrate)
+                .timeout(Duration::from_millis(100))
+                .connect()
+                .map_err(|e| format!("Failed to open port {}: {}", port, e))?;
+            BusConnection::V2(b)
+        }
+        "1.0" => {
+            let b = dynamixel_sdk::v1::new(port, baudrate)
+                .timeout(Duration::from_millis(100))
+                .connect()
+                .map_err(|e| format!("Failed to open port {}: {}", port, e))?;
+            BusConnection::V1(b)
+        }
+        _ => return Err(format!("Unsupported protocol: {}", protocol)),
+    };
+
+    let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
+    *lock = Some(bus);
+    Ok(())
+}
+
+/// Closes the persistent connection, dropping the Bus and releasing the port.
+pub fn close_connection(state: &ConnectionState) -> Result<(), String> {
+    let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
+    *lock = None;
+    Ok(())
 }
 
 /// Scans for servos, streaming results via a Tauri Channel.

@@ -45,3 +45,7 @@ export async function scanServos(
 export async function cancelScan(): Promise<void> {
   return invoke<void>("cancel_scan");
 }
+
+export async function disconnect(): Promise<void> {
+  return invoke<void>("disconnect");
+}
