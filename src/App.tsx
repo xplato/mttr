@@ -1,7 +1,7 @@
 import "./App.css";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { BoltIcon, PowerOffIcon, RadarIcon, RefreshCwIcon } from "lucide-react";
+import { BoltIcon, PowerIcon, RadarIcon, RefreshCwIcon } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { ScanDialog } from "./components/ScanDialog";
@@ -144,7 +144,7 @@ function AppContent() {
                   className="text-neutral-500"
                   title="Disconnect"
                 >
-                  <PowerOffIcon />
+                  <PowerIcon />
                 </Button>
               </>
             )}

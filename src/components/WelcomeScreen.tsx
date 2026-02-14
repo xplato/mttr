@@ -26,7 +26,7 @@ export function WelcomeScreen({ onScan }: WelcomeScreenProps) {
         <div className="animate-fade-in-up" style={{ animationDelay: "200ms" }}>
           <Button onClick={onScan}>
             <RadarIcon data-icon="inline-start" />
-            Scan for Servos
+            Scan for servos
           </Button>
         </div>
       </div>

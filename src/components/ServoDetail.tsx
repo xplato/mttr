@@ -8,7 +8,7 @@ import {
 } from "react";
 import { getModel } from "@/lib/models";
 import type { ConnectionConfig, ReadEvent, ServoInfo } from "@/lib/servo";
-import { readControlTable } from "@/lib/servo";
+import { readControlTable, writeAddress } from "@/lib/servo";
 import { toast } from "sonner";
 
 import { ControlTableValue } from "./ControlTableValue";
@@ -87,6 +87,21 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
         }
       }
     }, [servo.id, model]);
+
+    const handleWrite = useCallback(
+      async (address: number, size: number, value: number) => {
+        await writeAddress(servo.id, address, size, value).catch((err) => {
+          toast.error(`Failed to write address ${address}: ${err}`);
+          throw err; // Re-throw so ControlTableValue keeps the input open
+        });
+        // Update local state with the written value
+        setFieldStates((prev) => ({
+          ...prev,
+          [address]: { value, error: null },
+        }));
+      },
+      [servo.id],
+    );
 
     useImperativeHandle(ref, () => ({ refresh: loadControlTable }), [
       loadControlTable,
@@ -167,6 +182,9 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
                             field={field}
                             value={state?.value ?? null}
                             error={state?.error ?? null}
+                            onWrite={(v) =>
+                              handleWrite(field.address, field.size, v)
+                            }
                           />
                         </TableCell>
                         <TableCell className="text-muted-foreground text-xs">

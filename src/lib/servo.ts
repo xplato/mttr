@@ -91,6 +91,22 @@ export interface ServoModel {
   areas: ModelArea[];
 }
 
+// ---- Control table write ----
+
+export async function writeAddress(
+  servoId: number,
+  address: number,
+  size: number,
+  value: number,
+): Promise<void> {
+  return invoke<void>("write_address", {
+    servoId,
+    address,
+    size,
+    value,
+  });
+}
+
 // ---- Control table read ----
 
 export type ReadEvent =

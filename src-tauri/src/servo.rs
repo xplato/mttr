@@ -161,6 +161,44 @@ pub fn scan_servos(
     Ok(())
 }
 
+/// Converts an i64 value to little-endian bytes of the given size.
+fn i64_to_bytes(value: i64, size: u16) -> Vec<u8> {
+    match size {
+        1 => vec![value as u8],
+        2 => (value as i16).to_le_bytes().to_vec(),
+        4 => (value as i32).to_le_bytes().to_vec(),
+        _ => {
+            let mut bytes = Vec::with_capacity(size as usize);
+            for i in 0..size {
+                bytes.push((value >> (i * 8)) as u8);
+            }
+            bytes
+        }
+    }
+}
+
+/// Writes a single value to a control table address on a servo.
+pub fn write_address(
+    servo_id: u8,
+    address: u16,
+    size: u16,
+    value: i64,
+    state: &ConnectionState,
+) -> Result<(), String> {
+    let data = i64_to_bytes(value, size);
+    let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
+    let bus = lock.as_mut().ok_or("No active connection")?;
+
+    match bus {
+        BusConnection::V2(ref mut b) => b
+            .write(servo_id, address, &data)
+            .map_err(|e| format!("{:?}", e)),
+        BusConnection::V1(ref mut b) => b
+            .write(servo_id, address as u8, &data)
+            .map_err(|e| format!("{:?}", e)),
+    }
+}
+
 /// Converts little-endian bytes to a signed i64.
 /// 1-byte values are treated as unsigned (no signed 1-byte fields in Dynamixel).
 /// 2-byte and 4-byte values are sign-extended to handle fields with negative ranges.

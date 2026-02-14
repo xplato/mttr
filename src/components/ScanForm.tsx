@@ -265,7 +265,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
         <div className="space-y-2">
           <Button onClick={handleCancel} variant="outline" className="w-full">
             <OctagonPauseIcon className="text-muted-foreground" />
-            <span>Stop Scan</span>
+            <span>Stop scan</span>
           </Button>
 
           {/* Progress bar */}
@@ -288,7 +288,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
           className="w-full"
         >
           <SearchIcon data-icon="inline-start" />
-          Scan for Servos
+          Scan for servos
         </Button>
       )}
 

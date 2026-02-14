@@ -1,3 +1,6 @@
+import type { ServoInfo } from "@/lib/servo";
+
+import { ScanForm } from "./ScanForm";
 import {
   Dialog,
   DialogContent,
@@ -5,13 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { ScanForm } from "./ScanForm";
-import type { ServoInfo } from "@/lib/servo";
 
 interface ScanDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onScanComplete: (servos: ServoInfo[], config: { port: string; protocol: string; baudrate: number }) => void;
+  onScanComplete: (
+    servos: ServoInfo[],
+    config: { port: string; protocol: string; baudrate: number },
+  ) => void;
 }
 
 export function ScanDialog({
@@ -23,7 +27,7 @@ export function ScanDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Scan for Servos</DialogTitle>
+          <DialogTitle>Scan for servos</DialogTitle>
           <DialogDescription>
             Configure your connection and scan for Dynamixel servos.
           </DialogDescription>

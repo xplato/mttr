@@ -66,6 +66,25 @@ pub fn disconnect(conn_state: State<'_, ConnectionState>) -> Result<(), String> 
 }
 
 #[tauri::command]
+pub async fn write_address(
+    servo_id: u8,
+    address: u16,
+    size: u16,
+    value: i64,
+    conn_state: State<'_, ConnectionState>,
+) -> Result<(), String> {
+    let state = ConnectionState {
+        bus: conn_state.bus.clone(),
+    };
+
+    tokio::task::spawn_blocking(move || {
+        servo::write_address(servo_id, address, size, value, &state)
+    })
+    .await
+    .map_err(|e| format!("Write task panicked: {}", e))?
+}
+
+#[tauri::command]
 pub async fn read_control_table(
     servo_id: u8,
     fields: Vec<(u16, u16)>,
