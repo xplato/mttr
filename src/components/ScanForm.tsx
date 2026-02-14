@@ -6,7 +6,12 @@ import {
   type ScanEvent,
   type ServoInfo,
 } from "@/lib/servo";
-import { RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
+import {
+  OctagonPauseIcon,
+  RefreshCwIcon,
+  SearchIcon,
+  XIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "./ui/button";
@@ -264,8 +269,8 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
       {scanning ? (
         <div className="space-y-2">
           <Button onClick={handleCancel} variant="outline" className="w-full">
-            <XIcon data-icon="inline-start" />
-            Cancel Scan
+            <OctagonPauseIcon className="text-muted-foreground" />
+            <span>Stop Scan</span>
           </Button>
 
           {/* Progress bar */}
@@ -298,19 +303,6 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
           <p className="text-muted-foreground text-xs font-medium">
             Found {results.length} servo{results.length !== 1 && "s"}
           </p>
-          {results.map((servo) => (
-            <div
-              key={servo.id}
-              className="bg-muted/50 flex items-center justify-between rounded-md px-3 py-2"
-            >
-              <div>
-                <p className="text-sm font-medium">ID {servo.id}</p>
-                <p className="text-muted-foreground text-xs">
-                  Model: {servo.model_number}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       )}
 
