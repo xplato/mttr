@@ -93,7 +93,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
           break;
         case "finished":
           if (event.data.cancelled) {
-            toast("Scan cancelled.");
+            toast("Scan stopped.");
           }
           break;
       }
