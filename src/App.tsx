@@ -4,13 +4,16 @@ import { useCallback, useEffect, useState } from "react";
 import { BoltIcon } from "lucide-react";
 import { Toaster } from "sonner";
 
+import { ConnectedView } from "./components/ConnectedView";
 import { SettingsPage } from "./components/settings";
 import Theme from "./components/settings/Theme";
 import { Button } from "./components/ui/button";
 import { WelcomeScreen } from "./components/WelcomeScreen";
+import type { ServoInfo } from "./lib/servo";
 
 function AppContent() {
   const [showSettings, setShowSettings] = useState(false);
+  const [connectedServo, setConnectedServo] = useState<ServoInfo | null>(null);
 
   const toggleSettings = useCallback(() => {
     setShowSettings((prev) => !prev);
@@ -65,7 +68,14 @@ function AppContent() {
         </div>
       </div>
 
-      <WelcomeScreen />
+      {connectedServo ? (
+        <ConnectedView
+          servo={connectedServo}
+          onDisconnect={() => setConnectedServo(null)}
+        />
+      ) : (
+        <WelcomeScreen onConnect={setConnectedServo} />
+      )}
     </div>
   );
 }
