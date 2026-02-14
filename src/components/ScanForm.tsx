@@ -44,7 +44,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
   const [protocol, setProtocol] = useState("2.0");
   const [baudrate, setBaudrate] = useState("57600");
   const [idStart, setIdStart] = useState(0);
-  const [idEnd, setIdEnd] = useState(252);
+  const [idEnd, setIdEnd] = useState(10);
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState<{
     current: number;
@@ -241,7 +241,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
                 Math.max(0, Math.min(252, parseInt(e.target.value) || 0)),
               )
             }
-            className="w-20 text-center"
+            className="field-sizing-content h-7 w-auto! max-w-xs py-0 text-sm"
           />
           <span className="text-muted-foreground text-sm">to</span>
           <Input
@@ -255,7 +255,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
                 Math.max(0, Math.min(252, parseInt(e.target.value) || 0)),
               )
             }
-            className="w-20 text-center"
+            className="field-sizing-content h-7 w-auto! max-w-xs py-0 text-sm"
           />
         </div>
       </div>
