@@ -49,3 +49,66 @@ export async function cancelScan(): Promise<void> {
 export async function disconnect(): Promise<void> {
   return invoke<void>("disconnect");
 }
+
+// ---- Model types (matching models/*.json structure) ----
+
+export interface ModelField {
+  address: number;
+  size: number;
+  name: string;
+  access: "R" | "RW";
+  default: number | null;
+  range: [number, number] | null;
+  unit: string | null;
+  description: string;
+  value_map?: Record<string, string | number>;
+  bit_fields?: Record<string, { name: string; values: Record<string, string> }>;
+  unit_map?: Record<string, string>;
+  range_ref?: {
+    min: { address: number; name: string };
+    max: { address: number; name: string };
+  };
+}
+
+export interface ModelArea {
+  name: string;
+  start_address: number;
+  end_address: number;
+  volatile: boolean;
+  fields: ModelField[];
+}
+
+export interface ServoModel {
+  model_number: number;
+  model_name: string;
+  protocol_versions: number[];
+  resolution: number;
+  eeprom_lock: {
+    description: string;
+    lock_address: number;
+    lock_value: number;
+  };
+  areas: ModelArea[];
+}
+
+// ---- Control table read ----
+
+export type ReadEvent =
+  | { event: "value"; data: { address: number; value: number } }
+  | { event: "error"; data: { address: number; message: string } }
+  | { event: "finished" };
+
+export async function readControlTable(
+  servoId: number,
+  fields: [number, number][],
+  onEvent: (event: ReadEvent) => void,
+): Promise<void> {
+  const channel = new Channel<ReadEvent>();
+  channel.onmessage = onEvent;
+
+  return invoke<void>("read_control_table", {
+    servoId,
+    fields,
+    onEvent: channel,
+  });
+}

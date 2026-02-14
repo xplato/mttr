@@ -29,9 +29,20 @@ pub struct ScanState {
     pub cancel: Arc<AtomicBool>,
 }
 
+/// Events streamed to the frontend during a control table read.
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase", tag = "event", content = "data")]
+pub enum ReadEvent {
+    /// Successfully read a value at the given address.
+    Value { address: u16, value: i64 },
+    /// Failed to read the given address.
+    Error { address: u16, message: String },
+    /// All requested addresses have been read.
+    Finished,
+}
+
 /// An open connection to the serial bus (either protocol version).
 /// The Bus is held to keep the serial port open; fields will be used for read/write commands.
-#[allow(dead_code)]
 pub enum BusConnection {
     V1(dynamixel_sdk::v1::Bus),
     V2(dynamixel_sdk::v2::Bus),
@@ -146,5 +157,72 @@ pub fn scan_servos(
     }
 
     let _ = on_event.send(ScanEvent::Finished { cancelled: false });
+    Ok(())
+}
+
+/// Converts little-endian bytes to a signed i64.
+/// 1-byte values are treated as unsigned (no signed 1-byte fields in Dynamixel).
+/// 2-byte and 4-byte values are sign-extended to handle fields with negative ranges.
+fn bytes_to_i64(bytes: &[u8]) -> i64 {
+    match bytes.len() {
+        1 => bytes[0] as i64,
+        2 => i16::from_le_bytes([bytes[0], bytes[1]]) as i64,
+        4 => i32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]) as i64,
+        _ => {
+            let mut val: i64 = 0;
+            for (i, &b) in bytes.iter().enumerate() {
+                val |= (b as i64) << (i * 8);
+            }
+            val
+        }
+    }
+}
+
+/// Reads a list of control table fields from a servo, streaming results via a Tauri Channel.
+/// Each field is specified as (address, size_in_bytes).
+/// Uses the persistent bus connection held in ConnectionState.
+pub fn read_control_table(
+    servo_id: u8,
+    fields: &[(u16, u16)],
+    state: &ConnectionState,
+    on_event: &Channel<ReadEvent>,
+) -> Result<(), String> {
+    let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
+    let bus = lock.as_mut().ok_or("No active connection")?;
+
+    for &(address, size) in fields {
+        match bus {
+            BusConnection::V2(ref mut b) => match b.read(servo_id, address, size) {
+                Ok(bytes) => {
+                    let _ = on_event.send(ReadEvent::Value {
+                        address,
+                        value: bytes_to_i64(&bytes),
+                    });
+                }
+                Err(e) => {
+                    let _ = on_event.send(ReadEvent::Error {
+                        address,
+                        message: format!("{:?}", e),
+                    });
+                }
+            },
+            BusConnection::V1(ref mut b) => match b.read(servo_id, address as u8, size as u8) {
+                Ok(bytes) => {
+                    let _ = on_event.send(ReadEvent::Value {
+                        address,
+                        value: bytes_to_i64(&bytes),
+                    });
+                }
+                Err(e) => {
+                    let _ = on_event.send(ReadEvent::Error {
+                        address,
+                        message: format!("{:?}", e),
+                    });
+                }
+            },
+        }
+    }
+
+    let _ = on_event.send(ReadEvent::Finished);
     Ok(())
 }

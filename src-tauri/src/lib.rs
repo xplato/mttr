@@ -15,6 +15,7 @@ pub fn run() {
             commands::scan_servos,
             commands::cancel_scan,
             commands::disconnect,
+            commands::read_control_table,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "./components/ui/alert-dialog";
 import { Button } from "./components/ui/button";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { WelcomeScreen } from "./components/WelcomeScreen";
 import useTheme from "./hooks/useTheme";
 import { disconnect, type ConnectionConfig, type ServoInfo } from "./lib/servo";
@@ -205,13 +206,13 @@ function App() {
   const { theme } = useTheme();
 
   return (
-    <>
+    <TooltipProvider>
       <Theme />
       <Toaster theme={theme as "light" | "dark" | "system"} />
       <main className="h-full">
         <AppContent />
       </main>
-    </>
+    </TooltipProvider>
   );
 }
 

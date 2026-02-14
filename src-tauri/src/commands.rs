@@ -4,7 +4,7 @@ use tauri::ipc::Channel;
 use tauri::State;
 
 use crate::serial;
-use crate::servo::{self, ConnectionState, ScanEvent, ScanState};
+use crate::servo::{self, ConnectionState, ReadEvent, ScanEvent, ScanState};
 
 #[tauri::command]
 pub fn list_ports() -> Vec<String> {
@@ -63,4 +63,14 @@ pub fn cancel_scan(state: State<'_, ScanState>) {
 #[tauri::command]
 pub fn disconnect(conn_state: State<'_, ConnectionState>) -> Result<(), String> {
     servo::close_connection(&conn_state)
+}
+
+#[tauri::command]
+pub fn read_control_table(
+    servo_id: u8,
+    fields: Vec<(u16, u16)>,
+    conn_state: State<'_, ConnectionState>,
+    on_event: Channel<ReadEvent>,
+) -> Result<(), String> {
+    servo::read_control_table(servo_id, &fields, &conn_state, &on_event)
 }
