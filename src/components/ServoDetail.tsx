@@ -218,18 +218,20 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
           </div>
         </div>
         <div className="border-border shrink-0 border-l px-6 py-4">
-          <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
-            Servo ID {servo.id}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {model.model_name} &middot; {config.port} &middot;{" "}
-            {config.baudrate.toLocaleString()} bps
-            {loading && (
-              <span className="text-muted-foreground ml-2 animate-pulse">
-                Reading...
-              </span>
-            )}
-          </p>
+          <div className="flex flex-col items-start justify-start gap-1">
+            <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
+              Servo ID {servo.id}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              {model.model_name} &middot; {config.port} &middot;{" "}
+              {config.baudrate.toLocaleString()} bps
+              {loading && (
+                <span className="text-muted-foreground ml-2 animate-pulse">
+                  Reading...
+                </span>
+              )}
+            </p>
+          </div>
         </div>
       </div>
     );
