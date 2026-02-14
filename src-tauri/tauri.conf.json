@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "MTTR",
-        "width": 900,
-        "height": 800,
+        "width": 1280,
+        "height": 1000,
         "minWidth": 600,
         "minHeight": 400,
         "resizable": true,

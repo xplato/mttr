@@ -105,22 +105,24 @@ export function ServoDetail({ servo, config }: ServoDetailProps) {
         </p>
       </div>
 
-      <div className="flex-1 overflow-auto px-6 py-4">
+      <div className="flex-1 overflow-auto py-4">
         {model.areas.map((area) => (
           <div key={area.name} className="mb-6">
-            <h3 className="mb-2 text-sm font-medium">
-              {area.name}
-              {area.volatile && (
-                <span className="text-muted-foreground font-normal">
-                  {" "}
-                  (volatile)
-                </span>
-              )}
-            </h3>
-            <Table>
+            <div className="pl-4">
+              <h3 className="mb-2 text-sm font-medium">
+                {area.name}
+                {area.volatile && (
+                  <span className="text-muted-foreground font-normal">
+                    {" "}
+                    (volatile)
+                  </span>
+                )}
+              </h3>
+            </div>
+            <Table className="px-6">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-16">Addr</TableHead>
+                  <TableHead className="w-16 pl-4">Addr</TableHead>
                   <TableHead className="w-12">Size</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Description</TableHead>
@@ -134,7 +136,7 @@ export function ServoDetail({ servo, config }: ServoDetailProps) {
                   const state = fieldStates[field.address];
                   return (
                     <TableRow key={field.address}>
-                      <TableCell className="font-mono text-xs">
+                      <TableCell className="pl-4 font-mono text-xs">
                         {field.address}
                       </TableCell>
                       <TableCell className="font-mono text-xs">
