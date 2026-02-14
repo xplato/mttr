@@ -1,9 +1,14 @@
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 
 export interface ServoInfo {
   id: number;
   model_number: number;
 }
+
+export type ScanEvent =
+  | { event: "found"; data: ServoInfo }
+  | { event: "progress"; data: { current: number; total: number } }
+  | { event: "finished"; data: { cancelled: boolean } };
 
 export async function listPorts(): Promise<string[]> {
   return invoke<string[]>("list_ports");
@@ -15,12 +20,21 @@ export async function scanServos(
   baudrate: number,
   idStart: number,
   idEnd: number,
-): Promise<ServoInfo[]> {
-  return invoke<ServoInfo[]>("scan_servos", {
+  onEvent: (event: ScanEvent) => void,
+): Promise<void> {
+  const channel = new Channel<ScanEvent>();
+  channel.onmessage = onEvent;
+
+  return invoke<void>("scan_servos", {
     port,
     protocol,
     baudrate,
     idStart,
     idEnd,
+    onEvent: channel,
   });
+}
+
+export async function cancelScan(): Promise<void> {
+  return invoke<void>("cancel_scan");
 }

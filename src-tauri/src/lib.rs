@@ -8,9 +8,11 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        .manage(servo::ScanState::default())
         .invoke_handler(tauri::generate_handler![
             commands::list_ports,
             commands::scan_servos,
+            commands::cancel_scan,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

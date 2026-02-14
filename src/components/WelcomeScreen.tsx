@@ -1,6 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import { listPorts, scanServos, type ServoInfo } from "@/lib/servo";
-import { LoaderCircleIcon, RefreshCwIcon, SearchIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  cancelScan,
+  listPorts,
+  scanServos,
+  type ScanEvent,
+  type ServoInfo,
+} from "@/lib/servo";
+import { RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "./ui/button";
@@ -37,7 +43,14 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
   const [idStart, setIdStart] = useState(0);
   const [idEnd, setIdEnd] = useState(252);
   const [scanning, setScanning] = useState(false);
-  const [results, setResults] = useState<ServoInfo[] | null>(null);
+  const [progress, setProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+  const [results, setResults] = useState<ServoInfo[]>([]);
+
+  // Track whether a scan has been run (to distinguish "no results yet" from "scan returned nothing")
+  const hasScanned = useRef(false);
 
   const refreshPorts = useCallback(async () => {
     try {
@@ -61,25 +74,55 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
       return;
     }
     setScanning(true);
-    setResults(null);
+    setResults([]);
+    setProgress(null);
+    hasScanned.current = true;
+
+    const handleEvent = (event: ScanEvent) => {
+      switch (event.event) {
+        case "found":
+          setResults((prev) => [...prev, event.data]);
+          break;
+        case "progress":
+          setProgress(event.data);
+          break;
+        case "finished":
+          if (event.data.cancelled) {
+            toast("Scan cancelled.");
+          }
+          break;
+      }
+    };
+
     try {
-      const servos = await scanServos(
+      await scanServos(
         selectedPort,
         protocol,
         parseInt(baudrate),
         idStart,
         idEnd,
+        handleEvent,
       );
-      setResults(servos);
-      if (servos.length === 0) {
-        toast("No servos found. Check your connection and settings.");
-      }
     } catch (err) {
       toast.error(`Scan failed: ${err}`);
     } finally {
       setScanning(false);
+      setProgress(null);
     }
   }, [selectedPort, protocol, baudrate, idStart, idEnd]);
+
+  const handleCancel = useCallback(async () => {
+    try {
+      await cancelScan();
+    } catch (err) {
+      toast.error(`Failed to cancel scan: ${err}`);
+    }
+  }, []);
+
+  const progressPercent =
+    progress && progress.total > 0
+      ? Math.round(((progress.current - idStart) / progress.total) * 100)
+      : 0;
 
   return (
     <div className="flex h-full flex-1 items-center justify-center">
@@ -108,7 +151,7 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
             </label>
             <div className="flex gap-1.5">
               <Select value={selectedPort} onValueChange={setSelectedPort}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" disabled={scanning}>
                   <SelectValue
                     placeholder={
                       ports.length === 0 ? "No ports found" : "Select port"
@@ -128,6 +171,7 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
                 size="icon"
                 onClick={refreshPorts}
                 title="Refresh ports"
+                disabled={scanning}
               >
                 <RefreshCwIcon />
               </Button>
@@ -140,7 +184,11 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
               <label className="text-muted-foreground text-xs font-medium">
                 Protocol
               </label>
-              <Select value={protocol} onValueChange={setProtocol}>
+              <Select
+                value={protocol}
+                onValueChange={setProtocol}
+                disabled={scanning}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -158,7 +206,11 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
               <label className="text-muted-foreground text-xs font-medium">
                 Baudrate
               </label>
-              <Select value={baudrate} onValueChange={setBaudrate}>
+              <Select
+                value={baudrate}
+                onValueChange={setBaudrate}
+                disabled={scanning}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -184,6 +236,7 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
                 min={0}
                 max={252}
                 value={idStart}
+                disabled={scanning}
                 onChange={(e) =>
                   setIdStart(
                     Math.max(0, Math.min(252, parseInt(e.target.value) || 0)),
@@ -197,6 +250,7 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
                 min={0}
                 max={252}
                 value={idEnd}
+                disabled={scanning}
                 onChange={(e) =>
                   setIdEnd(
                     Math.max(0, Math.min(252, parseInt(e.target.value) || 0)),
@@ -207,22 +261,45 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
             </div>
           </div>
 
-          {/* Scan Button */}
-          <Button
-            onClick={handleScan}
-            disabled={scanning || !selectedPort}
-            className="w-full"
-          >
-            {scanning ? (
-              <LoaderCircleIcon className="animate-spin" />
-            ) : (
+          {/* Scan / Cancel Button */}
+          {scanning ? (
+            <div className="space-y-2">
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                className="w-full"
+              >
+                <XIcon data-icon="inline-start" />
+                Cancel Scan
+              </Button>
+
+              {/* Progress bar */}
+              <div className="space-y-1">
+                <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                  <div
+                    className="bg-primary h-full rounded-full transition-all duration-150"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <p className="text-muted-foreground text-center text-xs">
+                  Scanning ID {progress?.current ?? idStart} of {idStart}–
+                  {idEnd}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <Button
+              onClick={handleScan}
+              disabled={!selectedPort}
+              className="w-full"
+            >
               <SearchIcon data-icon="inline-start" />
-            )}
-            {scanning ? "Scanning..." : "Scan for Servos"}
-          </Button>
+              Scan for Servos
+            </Button>
+          )}
 
           {/* Scan Results */}
-          {results !== null && results.length > 0 && (
+          {results.length > 0 && (
             <div className="border-border space-y-2 rounded-lg border p-3">
               <p className="text-muted-foreground text-xs font-medium">
                 Found {results.length} servo{results.length !== 1 && "s"}
@@ -248,6 +325,13 @@ export function WelcomeScreen({ onConnect }: WelcomeScreenProps) {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* No results message (only after a completed scan) */}
+          {!scanning && hasScanned.current && results.length === 0 && (
+            <p className="text-muted-foreground text-center text-sm">
+              No servos found. Check your connection and settings.
+            </p>
           )}
         </div>
       </div>
