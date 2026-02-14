@@ -127,76 +127,80 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
 
     return (
       <div className="grid h-full grid-cols-[auto_24rem] overflow-hidden">
-        <div className="flex-1 overflow-auto py-4">
-          {model.areas.map((area) => (
-            <div key={area.name} className="mb-6">
-              <div className="pl-4">
-                <h3 className="mb-2 text-sm font-medium">
-                  {area.name}
-                  {area.volatile && (
-                    <span className="text-muted-foreground font-normal">
-                      {" "}
-                      (volatile)
-                    </span>
-                  )}
-                </h3>
+        <div className="w-full overflow-auto">
+          <div className="min-w-200 flex-1 py-4">
+            {model.areas.map((area) => (
+              <div key={area.name} className="mb-6">
+                <div className="pl-4">
+                  <h3 className="mb-2 text-sm font-medium">
+                    {area.name}
+                    {area.volatile && (
+                      <span className="text-muted-foreground font-normal">
+                        {" "}
+                        (volatile)
+                      </span>
+                    )}
+                  </h3>
+                </div>
+                <Table className="px-6">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16 pl-4">Addr</TableHead>
+                      <TableHead className="w-12">Size</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="w-14">Access</TableHead>
+                      <TableHead className="w-32">Value</TableHead>
+                      <TableHead>Unit</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {area.fields.map((field) => {
+                      const state = fieldStates[field.address];
+                      return (
+                        <TableRow key={field.address}>
+                          <TableCell className="pl-4 font-mono text-xs">
+                            {field.address}
+                          </TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {field.size}
+                          </TableCell>
+                          <TableCell className="text-xs">
+                            {field.name}
+                          </TableCell>
+                          <TableCell className="text-xs">
+                            <p className="max-w-xs whitespace-normal">
+                              {field.description}
+                            </p>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={`text-xs ${field.access === "RW" ? "text-foreground" : "text-muted-foreground"}`}
+                            >
+                              {field.access}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <ControlTableValue
+                              field={field}
+                              value={state?.value ?? null}
+                              error={state?.error ?? null}
+                              onWrite={(v) =>
+                                handleWrite(field.address, field.size, v)
+                              }
+                            />
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {field.unit ?? ""}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
-              <Table className="px-6">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16 pl-4">Addr</TableHead>
-                    <TableHead className="w-12">Size</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="w-14">Access</TableHead>
-                    <TableHead className="w-32">Value</TableHead>
-                    <TableHead>Unit</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {area.fields.map((field) => {
-                    const state = fieldStates[field.address];
-                    return (
-                      <TableRow key={field.address}>
-                        <TableCell className="pl-4 font-mono text-xs">
-                          {field.address}
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {field.size}
-                        </TableCell>
-                        <TableCell className="text-xs">{field.name}</TableCell>
-                        <TableCell className="text-xs">
-                          <p className="max-w-xs whitespace-normal">
-                            {field.description}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={`text-xs ${field.access === "RW" ? "text-foreground" : "text-muted-foreground"}`}
-                          >
-                            {field.access}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <ControlTableValue
-                            field={field}
-                            value={state?.value ?? null}
-                            error={state?.error ?? null}
-                            onWrite={(v) =>
-                              handleWrite(field.address, field.size, v)
-                            }
-                          />
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {field.unit ?? ""}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         <div className="border-border shrink-0 border-l px-6 py-4">
           <h2 className="text-foreground text-xl leading-none font-semibold tracking-tight">
