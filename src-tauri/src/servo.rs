@@ -49,9 +49,10 @@ pub enum BusConnection {
 }
 
 /// Managed state for the active serial connection.
-#[derive(Default)]
+/// Uses Arc<Mutex<...>> so the bus reference can be shared with spawned tasks.
+#[derive(Default, Clone)]
 pub struct ConnectionState {
-    pub bus: Mutex<Option<BusConnection>>,
+    pub bus: Arc<Mutex<Option<BusConnection>>>,
 }
 
 /// Opens a persistent connection to the serial port.
@@ -180,26 +181,28 @@ fn bytes_to_i64(bytes: &[u8]) -> i64 {
 
 /// Reads a list of control table fields from a servo, streaming results via a Tauri Channel.
 /// Each field is specified as (address, size_in_bytes).
-/// Uses the persistent bus connection held in ConnectionState.
+/// Locks the bus per-read so events can be delivered incrementally.
 pub fn read_control_table(
     servo_id: u8,
     fields: &[(u16, u16)],
     state: &ConnectionState,
     on_event: &Channel<ReadEvent>,
 ) -> Result<(), String> {
-    let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
-    let bus = lock.as_mut().ok_or("No active connection")?;
-
     for &(address, size) in fields {
+        let mut lock = state.bus.lock().map_err(|e| e.to_string())?;
+        let bus = lock.as_mut().ok_or("No active connection")?;
+
         match bus {
             BusConnection::V2(ref mut b) => match b.read(servo_id, address, size) {
                 Ok(bytes) => {
+                    drop(lock);
                     let _ = on_event.send(ReadEvent::Value {
                         address,
                         value: bytes_to_i64(&bytes),
                     });
                 }
                 Err(e) => {
+                    drop(lock);
                     let _ = on_event.send(ReadEvent::Error {
                         address,
                         message: format!("{:?}", e),
@@ -208,12 +211,14 @@ pub fn read_control_table(
             },
             BusConnection::V1(ref mut b) => match b.read(servo_id, address as u8, size as u8) {
                 Ok(bytes) => {
+                    drop(lock);
                     let _ = on_event.send(ReadEvent::Value {
                         address,
                         value: bytes_to_i64(&bytes),
                     });
                 }
                 Err(e) => {
+                    drop(lock);
                     let _ = on_event.send(ReadEvent::Error {
                         address,
                         message: format!("{:?}", e),

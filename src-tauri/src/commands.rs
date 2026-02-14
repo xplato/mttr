@@ -66,11 +66,19 @@ pub fn disconnect(conn_state: State<'_, ConnectionState>) -> Result<(), String> 
 }
 
 #[tauri::command]
-pub fn read_control_table(
+pub async fn read_control_table(
     servo_id: u8,
     fields: Vec<(u16, u16)>,
     conn_state: State<'_, ConnectionState>,
     on_event: Channel<ReadEvent>,
 ) -> Result<(), String> {
-    servo::read_control_table(servo_id, &fields, &conn_state, &on_event)
+    let state = ConnectionState {
+        bus: conn_state.bus.clone(),
+    };
+
+    tokio::task::spawn_blocking(move || {
+        servo::read_control_table(servo_id, &fields, &state, &on_event)
+    })
+    .await
+    .map_err(|e| format!("Read task panicked: {}", e))?
 }
