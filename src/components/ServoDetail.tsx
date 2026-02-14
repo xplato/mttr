@@ -9,11 +9,11 @@ export function ServoDetail({ servo, config }: ServoDetailProps) {
   return (
     <div className="flex h-full flex-1 flex-col p-6">
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto w-full max-w-2xl pb-6">
+        <div className="mx-auto w-full max-w-2xl pb-2">
           <h2 className="text-foreground mb-1 text-xl leading-none font-semibold tracking-tight">
             Servo ID {servo.id}
           </h2>
-          <p className="text-muted-foreground mb-6 text-sm">
+          <p className="text-muted-foreground mb-3 text-sm">
             Model {servo.model_number}
           </p>
 
