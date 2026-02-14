@@ -1,4 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  cancelScan,
+  listPorts,
+  scanServos,
+  type ScanEvent,
+  type ServoInfo,
+} from "@/lib/servo";
 import { RefreshCwIcon, SearchIcon, XIcon } from "lucide-react";
 import { toast } from "sonner";
 
@@ -11,16 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import {
-  listPorts,
-  scanServos,
-  cancelScan,
-  type ServoInfo,
-  type ScanEvent,
-} from "@/lib/servo";
 
 interface ScanFormProps {
-  onScanComplete: (servos: ServoInfo[], config: { port: string; protocol: string; baudrate: number }) => void;
+  onScanComplete: (
+    servos: ServoInfo[],
+    config: { port: string; protocol: string; baudrate: number },
+  ) => void;
 }
 
 const BAUDRATE_OPTIONS = [
@@ -47,9 +50,8 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
     current: number;
     total: number;
   } | null>(null);
-
-  // Accumulate found servos during a scan
-  const foundServos = useRef<ServoInfo[]>([]);
+  const [results, setResults] = useState<ServoInfo[]>([]);
+  const hasScanned = useRef(false);
 
   const refreshPorts = useCallback(async () => {
     try {
@@ -74,12 +76,17 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
     }
     setScanning(true);
     setProgress(null);
-    foundServos.current = [];
+    setResults([]);
+    hasScanned.current = true;
+
+    // Accumulate in a local variable so we have the final list for onScanComplete
+    let found: ServoInfo[] = [];
 
     const handleEvent = (event: ScanEvent) => {
       switch (event.event) {
         case "found":
-          foundServos.current = [...foundServos.current, event.data];
+          found = [...found, event.data];
+          setResults(found);
           break;
         case "progress":
           setProgress(event.data);
@@ -101,16 +108,16 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
         idEnd,
         handleEvent,
       );
-      onScanComplete(foundServos.current, {
+      onScanComplete(found, {
         port: selectedPort,
         protocol,
         baudrate: parseInt(baudrate),
       });
-      if (foundServos.current.length === 0) {
+      if (found.length === 0) {
         toast("No servos found. Check your connection and settings.");
       } else {
         toast.success(
-          `Found ${foundServos.current.length} servo${foundServos.current.length !== 1 ? "s" : ""}.`,
+          `Found ${found.length} servo${found.length !== 1 ? "s" : ""}.`,
         );
       }
     } catch (err) {
@@ -256,11 +263,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
       {/* Scan / Cancel Button */}
       {scanning ? (
         <div className="space-y-2">
-          <Button
-            onClick={handleCancel}
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={handleCancel} variant="outline" className="w-full">
             <XIcon data-icon="inline-start" />
             Cancel Scan
           </Button>
@@ -287,6 +290,35 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
           <SearchIcon data-icon="inline-start" />
           Scan for Servos
         </Button>
+      )}
+
+      {/* Scan Results */}
+      {results.length > 0 && (
+        <div className="border-border space-y-1.5 rounded-lg border p-3">
+          <p className="text-muted-foreground text-xs font-medium">
+            Found {results.length} servo{results.length !== 1 && "s"}
+          </p>
+          {results.map((servo) => (
+            <div
+              key={servo.id}
+              className="bg-muted/50 flex items-center justify-between rounded-md px-3 py-2"
+            >
+              <div>
+                <p className="text-sm font-medium">ID {servo.id}</p>
+                <p className="text-muted-foreground text-xs">
+                  Model: {servo.model_number}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* No results message */}
+      {!scanning && hasScanned.current && results.length === 0 && (
+        <p className="text-muted-foreground text-center text-sm">
+          No servos found. Check your connection and settings.
+        </p>
       )}
     </div>
   );

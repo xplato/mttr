@@ -1,7 +1,7 @@
 import "./App.css";
 
 import { useCallback, useEffect, useState } from "react";
-import { BoltIcon, PowerIcon, PowerOffIcon, RadarIcon } from "lucide-react";
+import { BoltIcon, PowerOffIcon, RadarIcon } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { ScanDialog } from "./components/ScanDialog";
@@ -88,7 +88,10 @@ function AppContent() {
   return (
     <div className="bg-background flex h-full flex-col">
       {/* Title bar */}
-      <div data-tauri-drag-region className="h-10 w-full shrink-0">
+      <div
+        data-tauri-drag-region
+        className="relative z-5000 h-10 w-full shrink-0"
+      >
         <div
           data-tauri-drag-region
           className="border-border grid h-10 grid-cols-3 border-b"
