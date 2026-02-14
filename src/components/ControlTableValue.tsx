@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ModelField } from "@/lib/servo";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 import { Input } from "./ui/input";
 import {
@@ -90,32 +91,44 @@ export function ControlTableValue({
     }
   };
 
+  const validate = (raw: string): number | null => {
+    const parsed = Number(raw);
+    if (!Number.isFinite(parsed) || raw.trim() === "") {
+      toast.error(`${field.name}: value must be a number`);
+      return null;
+    }
+    if (!Number.isInteger(parsed)) {
+      toast.error(`${field.name}: value must be an integer`);
+      return null;
+    }
+    if (field.range && (parsed < field.range[0] || parsed > field.range[1])) {
+      toast.error(
+        `${field.name}: value must be between ${field.range[0]} and ${field.range[1]}`,
+      );
+      return null;
+    }
+    return parsed;
+  };
+
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") {
       e.preventDefault();
       cancel();
     } else if (e.key === "Enter") {
       e.preventDefault();
-      const parsed = Number(draft);
-      if (!Number.isFinite(parsed)) return;
-      if (field.range && (parsed < field.range[0] || parsed > field.range[1]))
-        return;
-      commit(parsed);
+      const validated = validate(draft);
+      if (validated !== null) commit(validated);
     }
   };
 
   const handleInputBlur = () => {
     if (writing) return;
-    const parsed = Number(draft);
-    if (!Number.isFinite(parsed)) {
+    const validated = validate(draft);
+    if (validated !== null) {
+      commit(validated);
+    } else {
       cancel();
-      return;
     }
-    if (field.range && (parsed < field.range[0] || parsed > field.range[1])) {
-      cancel();
-      return;
-    }
-    commit(parsed);
   };
 
   const handleSelectChange = (val: string) => {
