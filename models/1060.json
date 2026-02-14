@@ -1,0 +1,1764 @@
+{
+  "model_number": 1060,
+  "model_name": "XL430-W250-T",
+  "protocol_versions": [2.0],
+  "resolution": 4096,
+  "eeprom_lock": {
+    "description": "EEPROM values can only be modified when Torque Enable (address 64) is set to 0.",
+    "lock_address": 64,
+    "lock_value": 1
+  },
+  "areas": [
+    {
+      "name": "EEPROM",
+      "start_address": 0,
+      "end_address": 63,
+      "volatile": false,
+      "fields": [
+        {
+          "address": 0,
+          "size": 2,
+          "name": "Model Number",
+          "access": "R",
+          "default": 1060,
+          "range": null,
+          "unit": null,
+          "description": "Model identification number."
+        },
+        {
+          "address": 2,
+          "size": 4,
+          "name": "Model Information",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": null,
+          "description": "Model information."
+        },
+        {
+          "address": 6,
+          "size": 1,
+          "name": "Firmware Version",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": null,
+          "description": "Firmware version."
+        },
+        {
+          "address": 7,
+          "size": 1,
+          "name": "ID",
+          "access": "RW",
+          "default": 1,
+          "range": [0, 252],
+          "unit": null,
+          "description": "Unique servo ID on the bus."
+        },
+        {
+          "address": 8,
+          "size": 1,
+          "name": "Baud Rate",
+          "access": "RW",
+          "default": 1,
+          "range": [0, 7],
+          "unit": null,
+          "description": "Communication baud rate.",
+          "value_map": {
+            "0": 9600,
+            "1": 57600,
+            "2": 115200,
+            "3": 1000000,
+            "4": 2000000,
+            "5": 3000000,
+            "6": 4000000,
+            "7": 4500000
+          }
+        },
+        {
+          "address": 9,
+          "size": 1,
+          "name": "Return Delay Time",
+          "access": "RW",
+          "default": 250,
+          "range": [0, 254],
+          "unit": "2 usec",
+          "description": "Delay time before Status Packet is returned after receiving an Instruction Packet."
+        },
+        {
+          "address": 10,
+          "size": 1,
+          "name": "Drive Mode",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 13],
+          "unit": null,
+          "description": "Configures drive direction, profile type, and torque-on behavior.",
+          "bit_fields": {
+            "0": {
+              "name": "Direction",
+              "values": {
+                "0": "Normal (CCW positive)",
+                "1": "Reverse (CW positive)"
+              }
+            },
+            "2": {
+              "name": "Profile Configuration",
+              "values": {
+                "0": "Velocity-based profile",
+                "1": "Time-based profile"
+              }
+            },
+            "3": {
+              "name": "Torque On by Goal Update",
+              "values": {
+                "0": "Requires Torque Enable",
+                "1": "Auto-enables torque on goal command"
+              }
+            }
+          }
+        },
+        {
+          "address": 11,
+          "size": 1,
+          "name": "Operating Mode",
+          "access": "RW",
+          "default": 3,
+          "range": [0, 16],
+          "unit": null,
+          "description": "Sets the operating mode of the servo.",
+          "value_map": {
+            "1": "Velocity Control",
+            "3": "Position Control (0-360 deg)",
+            "4": "Extended Position Control (multi-turn)",
+            "16": "PWM Control"
+          }
+        },
+        {
+          "address": 12,
+          "size": 1,
+          "name": "Secondary ID",
+          "access": "RW",
+          "default": 255,
+          "range": [0, 252],
+          "unit": null,
+          "description": "Secondary ID for group control. 255 disables secondary ID."
+        },
+        {
+          "address": 13,
+          "size": 1,
+          "name": "Protocol Type",
+          "access": "RW",
+          "default": 2,
+          "range": [1, 2],
+          "unit": null,
+          "description": "Dynamixel protocol version.",
+          "value_map": {
+            "1": "Protocol 1.0",
+            "2": "Protocol 2.0"
+          }
+        },
+        {
+          "address": 20,
+          "size": 4,
+          "name": "Homing Offset",
+          "access": "RW",
+          "default": 0,
+          "range": [-1044479, 1044479],
+          "unit": "pulse",
+          "description": "Adjusts the home position. The offset is added to Present Position."
+        },
+        {
+          "address": 24,
+          "size": 4,
+          "name": "Moving Threshold",
+          "access": "RW",
+          "default": 10,
+          "range": [0, 1023],
+          "unit": "0.229 rev/min",
+          "description": "Velocity threshold to determine whether the servo is in motion. Moving(122) is set to 1 when velocity exceeds this value."
+        },
+        {
+          "address": 31,
+          "size": 1,
+          "name": "Temperature Limit",
+          "access": "RW",
+          "default": 72,
+          "range": [0, 100],
+          "unit": "deg C",
+          "description": "Maximum internal temperature limit. Exceeding this triggers a Shutdown if configured."
+        },
+        {
+          "address": 32,
+          "size": 2,
+          "name": "Max Voltage Limit",
+          "access": "RW",
+          "default": 140,
+          "range": [60, 140],
+          "unit": "0.1 V",
+          "description": "Maximum allowed input voltage."
+        },
+        {
+          "address": 34,
+          "size": 2,
+          "name": "Min Voltage Limit",
+          "access": "RW",
+          "default": 60,
+          "range": [60, 140],
+          "unit": "0.1 V",
+          "description": "Minimum allowed input voltage."
+        },
+        {
+          "address": 36,
+          "size": 2,
+          "name": "PWM Limit",
+          "access": "RW",
+          "default": 885,
+          "range": [0, 885],
+          "unit": "0.113 %",
+          "description": "Maximum PWM output limit."
+        },
+        {
+          "address": 44,
+          "size": 4,
+          "name": "Velocity Limit",
+          "access": "RW",
+          "default": 265,
+          "range": [0, 1023],
+          "unit": "0.229 rev/min",
+          "description": "Maximum velocity limit."
+        },
+        {
+          "address": 48,
+          "size": 4,
+          "name": "Max Position Limit",
+          "access": "RW",
+          "default": 4095,
+          "range": [0, 4095],
+          "unit": "pulse",
+          "description": "Maximum position limit for Position Control mode."
+        },
+        {
+          "address": 52,
+          "size": 4,
+          "name": "Min Position Limit",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 4095],
+          "unit": "pulse",
+          "description": "Minimum position limit for Position Control mode."
+        },
+        {
+          "address": 60,
+          "size": 1,
+          "name": "Startup Configuration",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 3],
+          "unit": null,
+          "description": "Configures startup behavior for torque and RAM restoration.",
+          "bit_fields": {
+            "0": {
+              "name": "Startup Torque On",
+              "values": {
+                "0": "Torque off at startup",
+                "1": "Torque on at startup"
+              }
+            },
+            "1": {
+              "name": "RAM Restore",
+              "values": {
+                "0": "No RAM restoration",
+                "1": "Restore RAM from backup at startup"
+              }
+            }
+          }
+        },
+        {
+          "address": 63,
+          "size": 1,
+          "name": "Shutdown",
+          "access": "RW",
+          "default": 52,
+          "range": [0, 63],
+          "unit": null,
+          "description": "Configures which error conditions cause a torque shutdown. Default (52) enables Overheating, Electrical Shock, and Overload errors.",
+          "bit_fields": {
+            "0": {
+              "name": "Input Voltage Error",
+              "values": {
+                "0": "Disabled",
+                "1": "Shutdown on input voltage error"
+              }
+            },
+            "2": {
+              "name": "Overheating Error",
+              "values": { "0": "Disabled", "1": "Shutdown on overheating" }
+            },
+            "3": {
+              "name": "Motor Encoder Error",
+              "values": { "0": "Disabled", "1": "Shutdown on encoder error" }
+            },
+            "4": {
+              "name": "Electrical Shock Error",
+              "values": { "0": "Disabled", "1": "Shutdown on electrical shock" }
+            },
+            "5": {
+              "name": "Overload Error",
+              "values": { "0": "Disabled", "1": "Shutdown on overload" }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RAM",
+      "start_address": 64,
+      "end_address": 661,
+      "volatile": true,
+      "fields": [
+        {
+          "address": 64,
+          "size": 1,
+          "name": "Torque Enable",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 1],
+          "unit": null,
+          "description": "Enables/disables motor torque. EEPROM values can only be changed when this is 0.",
+          "value_map": {
+            "0": "Torque off",
+            "1": "Torque on"
+          }
+        },
+        {
+          "address": 65,
+          "size": 1,
+          "name": "LED",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 1],
+          "unit": null,
+          "description": "Turns the LED on or off.",
+          "value_map": {
+            "0": "Off",
+            "1": "On"
+          }
+        },
+        {
+          "address": 68,
+          "size": 1,
+          "name": "Status Return Level",
+          "access": "RW",
+          "default": 2,
+          "range": [0, 2],
+          "unit": null,
+          "description": "Determines when Status Packets are returned.",
+          "value_map": {
+            "0": "Respond to PING only",
+            "1": "Respond to PING and READ",
+            "2": "Respond to all instructions"
+          }
+        },
+        {
+          "address": 69,
+          "size": 1,
+          "name": "Registered Instruction",
+          "access": "R",
+          "default": 0,
+          "range": [0, 1],
+          "unit": null,
+          "description": "Indicates if a REG_WRITE instruction is registered and waiting for ACTION."
+        },
+        {
+          "address": 70,
+          "size": 1,
+          "name": "Hardware Error Status",
+          "access": "R",
+          "default": 0,
+          "range": null,
+          "unit": null,
+          "description": "Indicates hardware error conditions. Bit flags match Shutdown(63) configuration."
+        },
+        {
+          "address": 76,
+          "size": 2,
+          "name": "Velocity I Gain",
+          "access": "RW",
+          "default": 1000,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Integral gain for velocity control PID."
+        },
+        {
+          "address": 78,
+          "size": 2,
+          "name": "Velocity P Gain",
+          "access": "RW",
+          "default": 100,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Proportional gain for velocity control PID."
+        },
+        {
+          "address": 80,
+          "size": 2,
+          "name": "Position D Gain",
+          "access": "RW",
+          "default": 4000,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Derivative gain for position control PID."
+        },
+        {
+          "address": 82,
+          "size": 2,
+          "name": "Position I Gain",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Integral gain for position control PID."
+        },
+        {
+          "address": 84,
+          "size": 2,
+          "name": "Position P Gain",
+          "access": "RW",
+          "default": 640,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Proportional gain for position control PID."
+        },
+        {
+          "address": 88,
+          "size": 2,
+          "name": "Feedforward 2nd Gain",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "Second feedforward gain for improving trajectory tracking."
+        },
+        {
+          "address": 90,
+          "size": 2,
+          "name": "Feedforward 1st Gain",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 16383],
+          "unit": null,
+          "description": "First feedforward gain for improving trajectory tracking."
+        },
+        {
+          "address": 98,
+          "size": 1,
+          "name": "Bus Watchdog",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 127],
+          "unit": "20 msec",
+          "description": "Watchdog timer for communication timeout. 0 disables. 1-127 sets timeout interval. Value of -1 indicates watchdog error occurred."
+        },
+        {
+          "address": 100,
+          "size": 2,
+          "name": "Goal PWM",
+          "access": "RW",
+          "default": null,
+          "range": [-885, 885],
+          "unit": "0.113 %",
+          "description": "Target PWM output value."
+        },
+        {
+          "address": 104,
+          "size": 4,
+          "name": "Goal Velocity",
+          "access": "RW",
+          "default": null,
+          "range": [-265, 265],
+          "unit": "0.229 rev/min",
+          "description": "Target velocity for Velocity Control mode."
+        },
+        {
+          "address": 108,
+          "size": 4,
+          "name": "Profile Acceleration",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 32767],
+          "unit": null,
+          "description": "Acceleration for profile trajectory. Unit depends on Drive Mode: velocity-based = 214.577 rev/min^2, time-based = 1 msec.",
+          "unit_map": {
+            "velocity_based": "214.577 rev/min^2",
+            "time_based": "1 msec"
+          }
+        },
+        {
+          "address": 112,
+          "size": 4,
+          "name": "Profile Velocity",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 32767],
+          "unit": "0.229 rev/min",
+          "description": "Velocity for profile trajectory. In time-based mode, unit is 1 msec."
+        },
+        {
+          "address": 116,
+          "size": 4,
+          "name": "Goal Position",
+          "access": "RW",
+          "default": null,
+          "range": null,
+          "unit": "pulse",
+          "description": "Target position. Range is bounded by Min Position Limit(52) and Max Position Limit(48). In Extended Position mode, range is -1,048,575 to 1,048,575.",
+          "range_ref": {
+            "min": { "address": 52, "name": "Min Position Limit" },
+            "max": { "address": 48, "name": "Max Position Limit" }
+          }
+        },
+        {
+          "address": 120,
+          "size": 2,
+          "name": "Realtime Tick",
+          "access": "R",
+          "default": null,
+          "range": [0, 32767],
+          "unit": "msec",
+          "description": "Time elapsed in milliseconds since the servo powered on. Wraps at 32,767."
+        },
+        {
+          "address": 122,
+          "size": 1,
+          "name": "Moving",
+          "access": "R",
+          "default": 0,
+          "range": [0, 1],
+          "unit": null,
+          "description": "Indicates whether the servo is in motion (velocity exceeds Moving Threshold)."
+        },
+        {
+          "address": 123,
+          "size": 1,
+          "name": "Moving Status",
+          "access": "R",
+          "default": 0,
+          "range": null,
+          "unit": null,
+          "description": "Detailed motion status flags indicating profile and in-position state."
+        },
+        {
+          "address": 124,
+          "size": 2,
+          "name": "Present PWM",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "0.113 %",
+          "description": "Current PWM output value."
+        },
+        {
+          "address": 126,
+          "size": 2,
+          "name": "Present Load",
+          "access": "R",
+          "default": null,
+          "range": [-1000, 1000],
+          "unit": "0.1 %",
+          "description": "Current load on the motor as a percentage of maximum torque."
+        },
+        {
+          "address": 128,
+          "size": 4,
+          "name": "Present Velocity",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "0.229 rev/min",
+          "description": "Current velocity of the motor."
+        },
+        {
+          "address": 132,
+          "size": 4,
+          "name": "Present Position",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "pulse",
+          "description": "Current position of the motor."
+        },
+        {
+          "address": 136,
+          "size": 4,
+          "name": "Velocity Trajectory",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "0.229 rev/min",
+          "description": "Target velocity computed by the profile generator."
+        },
+        {
+          "address": 140,
+          "size": 4,
+          "name": "Position Trajectory",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "pulse",
+          "description": "Target position computed by the profile generator."
+        },
+        {
+          "address": 144,
+          "size": 2,
+          "name": "Present Input Voltage",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "0.1 V",
+          "description": "Current input voltage."
+        },
+        {
+          "address": 146,
+          "size": 1,
+          "name": "Present Temperature",
+          "access": "R",
+          "default": null,
+          "range": null,
+          "unit": "deg C",
+          "description": "Current internal temperature."
+        },
+        {
+          "address": 147,
+          "size": 1,
+          "name": "Backup Ready",
+          "access": "R",
+          "default": null,
+          "range": [0, 1],
+          "unit": null,
+          "description": "Indicates if the control table backup is ready for restoration."
+        },
+        {
+          "address": 168,
+          "size": 2,
+          "name": "Indirect Address 1",
+          "access": "RW",
+          "default": 224,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 1."
+        },
+        {
+          "address": 170,
+          "size": 2,
+          "name": "Indirect Address 2",
+          "access": "RW",
+          "default": 225,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 2."
+        },
+        {
+          "address": 172,
+          "size": 2,
+          "name": "Indirect Address 3",
+          "access": "RW",
+          "default": 226,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 3."
+        },
+        {
+          "address": 174,
+          "size": 2,
+          "name": "Indirect Address 4",
+          "access": "RW",
+          "default": 227,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 4."
+        },
+        {
+          "address": 176,
+          "size": 2,
+          "name": "Indirect Address 5",
+          "access": "RW",
+          "default": 228,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 5."
+        },
+        {
+          "address": 178,
+          "size": 2,
+          "name": "Indirect Address 6",
+          "access": "RW",
+          "default": 229,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 6."
+        },
+        {
+          "address": 180,
+          "size": 2,
+          "name": "Indirect Address 7",
+          "access": "RW",
+          "default": 230,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 7."
+        },
+        {
+          "address": 182,
+          "size": 2,
+          "name": "Indirect Address 8",
+          "access": "RW",
+          "default": 231,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 8."
+        },
+        {
+          "address": 184,
+          "size": 2,
+          "name": "Indirect Address 9",
+          "access": "RW",
+          "default": 232,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 9."
+        },
+        {
+          "address": 186,
+          "size": 2,
+          "name": "Indirect Address 10",
+          "access": "RW",
+          "default": 233,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 10."
+        },
+        {
+          "address": 188,
+          "size": 2,
+          "name": "Indirect Address 11",
+          "access": "RW",
+          "default": 234,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 11."
+        },
+        {
+          "address": 190,
+          "size": 2,
+          "name": "Indirect Address 12",
+          "access": "RW",
+          "default": 235,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 12."
+        },
+        {
+          "address": 192,
+          "size": 2,
+          "name": "Indirect Address 13",
+          "access": "RW",
+          "default": 236,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 13."
+        },
+        {
+          "address": 194,
+          "size": 2,
+          "name": "Indirect Address 14",
+          "access": "RW",
+          "default": 237,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 14."
+        },
+        {
+          "address": 196,
+          "size": 2,
+          "name": "Indirect Address 15",
+          "access": "RW",
+          "default": 238,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 15."
+        },
+        {
+          "address": 198,
+          "size": 2,
+          "name": "Indirect Address 16",
+          "access": "RW",
+          "default": 239,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 16."
+        },
+        {
+          "address": 200,
+          "size": 2,
+          "name": "Indirect Address 17",
+          "access": "RW",
+          "default": 240,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 17."
+        },
+        {
+          "address": 202,
+          "size": 2,
+          "name": "Indirect Address 18",
+          "access": "RW",
+          "default": 241,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 18."
+        },
+        {
+          "address": 204,
+          "size": 2,
+          "name": "Indirect Address 19",
+          "access": "RW",
+          "default": 242,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 19."
+        },
+        {
+          "address": 206,
+          "size": 2,
+          "name": "Indirect Address 20",
+          "access": "RW",
+          "default": 243,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 20."
+        },
+        {
+          "address": 208,
+          "size": 2,
+          "name": "Indirect Address 21",
+          "access": "RW",
+          "default": 244,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 21."
+        },
+        {
+          "address": 210,
+          "size": 2,
+          "name": "Indirect Address 22",
+          "access": "RW",
+          "default": 245,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 22."
+        },
+        {
+          "address": 212,
+          "size": 2,
+          "name": "Indirect Address 23",
+          "access": "RW",
+          "default": 246,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 23."
+        },
+        {
+          "address": 214,
+          "size": 2,
+          "name": "Indirect Address 24",
+          "access": "RW",
+          "default": 247,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 24."
+        },
+        {
+          "address": 216,
+          "size": 2,
+          "name": "Indirect Address 25",
+          "access": "RW",
+          "default": 248,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 25."
+        },
+        {
+          "address": 218,
+          "size": 2,
+          "name": "Indirect Address 26",
+          "access": "RW",
+          "default": 249,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 26."
+        },
+        {
+          "address": 220,
+          "size": 2,
+          "name": "Indirect Address 27",
+          "access": "RW",
+          "default": 250,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 27."
+        },
+        {
+          "address": 222,
+          "size": 2,
+          "name": "Indirect Address 28",
+          "access": "RW",
+          "default": 251,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 28."
+        },
+        {
+          "address": 224,
+          "size": 1,
+          "name": "Indirect Data 1",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 1."
+        },
+        {
+          "address": 225,
+          "size": 1,
+          "name": "Indirect Data 2",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 2."
+        },
+        {
+          "address": 226,
+          "size": 1,
+          "name": "Indirect Data 3",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 3."
+        },
+        {
+          "address": 227,
+          "size": 1,
+          "name": "Indirect Data 4",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 4."
+        },
+        {
+          "address": 228,
+          "size": 1,
+          "name": "Indirect Data 5",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 5."
+        },
+        {
+          "address": 229,
+          "size": 1,
+          "name": "Indirect Data 6",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 6."
+        },
+        {
+          "address": 230,
+          "size": 1,
+          "name": "Indirect Data 7",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 7."
+        },
+        {
+          "address": 231,
+          "size": 1,
+          "name": "Indirect Data 8",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 8."
+        },
+        {
+          "address": 232,
+          "size": 1,
+          "name": "Indirect Data 9",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 9."
+        },
+        {
+          "address": 233,
+          "size": 1,
+          "name": "Indirect Data 10",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 10."
+        },
+        {
+          "address": 234,
+          "size": 1,
+          "name": "Indirect Data 11",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 11."
+        },
+        {
+          "address": 235,
+          "size": 1,
+          "name": "Indirect Data 12",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 12."
+        },
+        {
+          "address": 236,
+          "size": 1,
+          "name": "Indirect Data 13",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 13."
+        },
+        {
+          "address": 237,
+          "size": 1,
+          "name": "Indirect Data 14",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 14."
+        },
+        {
+          "address": 238,
+          "size": 1,
+          "name": "Indirect Data 15",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 15."
+        },
+        {
+          "address": 239,
+          "size": 1,
+          "name": "Indirect Data 16",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 16."
+        },
+        {
+          "address": 240,
+          "size": 1,
+          "name": "Indirect Data 17",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 17."
+        },
+        {
+          "address": 241,
+          "size": 1,
+          "name": "Indirect Data 18",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 18."
+        },
+        {
+          "address": 242,
+          "size": 1,
+          "name": "Indirect Data 19",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 19."
+        },
+        {
+          "address": 243,
+          "size": 1,
+          "name": "Indirect Data 20",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 20."
+        },
+        {
+          "address": 244,
+          "size": 1,
+          "name": "Indirect Data 21",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 21."
+        },
+        {
+          "address": 245,
+          "size": 1,
+          "name": "Indirect Data 22",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 22."
+        },
+        {
+          "address": 246,
+          "size": 1,
+          "name": "Indirect Data 23",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 23."
+        },
+        {
+          "address": 247,
+          "size": 1,
+          "name": "Indirect Data 24",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 24."
+        },
+        {
+          "address": 248,
+          "size": 1,
+          "name": "Indirect Data 25",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 25."
+        },
+        {
+          "address": 249,
+          "size": 1,
+          "name": "Indirect Data 26",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 26."
+        },
+        {
+          "address": 250,
+          "size": 1,
+          "name": "Indirect Data 27",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 27."
+        },
+        {
+          "address": 251,
+          "size": 1,
+          "name": "Indirect Data 28",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 28."
+        },
+        {
+          "address": 578,
+          "size": 2,
+          "name": "Indirect Address 29",
+          "access": "RW",
+          "default": 634,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 29. Requires Protocol 2.0."
+        },
+        {
+          "address": 580,
+          "size": 2,
+          "name": "Indirect Address 30",
+          "access": "RW",
+          "default": 635,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 30. Requires Protocol 2.0."
+        },
+        {
+          "address": 582,
+          "size": 2,
+          "name": "Indirect Address 31",
+          "access": "RW",
+          "default": 636,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 31. Requires Protocol 2.0."
+        },
+        {
+          "address": 584,
+          "size": 2,
+          "name": "Indirect Address 32",
+          "access": "RW",
+          "default": 637,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 32. Requires Protocol 2.0."
+        },
+        {
+          "address": 586,
+          "size": 2,
+          "name": "Indirect Address 33",
+          "access": "RW",
+          "default": 638,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 33. Requires Protocol 2.0."
+        },
+        {
+          "address": 588,
+          "size": 2,
+          "name": "Indirect Address 34",
+          "access": "RW",
+          "default": 639,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 34. Requires Protocol 2.0."
+        },
+        {
+          "address": 590,
+          "size": 2,
+          "name": "Indirect Address 35",
+          "access": "RW",
+          "default": 640,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 35. Requires Protocol 2.0."
+        },
+        {
+          "address": 592,
+          "size": 2,
+          "name": "Indirect Address 36",
+          "access": "RW",
+          "default": 641,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 36. Requires Protocol 2.0."
+        },
+        {
+          "address": 594,
+          "size": 2,
+          "name": "Indirect Address 37",
+          "access": "RW",
+          "default": 642,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 37. Requires Protocol 2.0."
+        },
+        {
+          "address": 596,
+          "size": 2,
+          "name": "Indirect Address 38",
+          "access": "RW",
+          "default": 643,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 38. Requires Protocol 2.0."
+        },
+        {
+          "address": 598,
+          "size": 2,
+          "name": "Indirect Address 39",
+          "access": "RW",
+          "default": 644,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 39. Requires Protocol 2.0."
+        },
+        {
+          "address": 600,
+          "size": 2,
+          "name": "Indirect Address 40",
+          "access": "RW",
+          "default": 645,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 40. Requires Protocol 2.0."
+        },
+        {
+          "address": 602,
+          "size": 2,
+          "name": "Indirect Address 41",
+          "access": "RW",
+          "default": 646,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 41. Requires Protocol 2.0."
+        },
+        {
+          "address": 604,
+          "size": 2,
+          "name": "Indirect Address 42",
+          "access": "RW",
+          "default": 647,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 42. Requires Protocol 2.0."
+        },
+        {
+          "address": 606,
+          "size": 2,
+          "name": "Indirect Address 43",
+          "access": "RW",
+          "default": 648,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 43. Requires Protocol 2.0."
+        },
+        {
+          "address": 608,
+          "size": 2,
+          "name": "Indirect Address 44",
+          "access": "RW",
+          "default": 649,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 44. Requires Protocol 2.0."
+        },
+        {
+          "address": 610,
+          "size": 2,
+          "name": "Indirect Address 45",
+          "access": "RW",
+          "default": 650,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 45. Requires Protocol 2.0."
+        },
+        {
+          "address": 612,
+          "size": 2,
+          "name": "Indirect Address 46",
+          "access": "RW",
+          "default": 651,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 46. Requires Protocol 2.0."
+        },
+        {
+          "address": 614,
+          "size": 2,
+          "name": "Indirect Address 47",
+          "access": "RW",
+          "default": 652,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 47. Requires Protocol 2.0."
+        },
+        {
+          "address": 616,
+          "size": 2,
+          "name": "Indirect Address 48",
+          "access": "RW",
+          "default": 653,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 48. Requires Protocol 2.0."
+        },
+        {
+          "address": 618,
+          "size": 2,
+          "name": "Indirect Address 49",
+          "access": "RW",
+          "default": 654,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 49. Requires Protocol 2.0."
+        },
+        {
+          "address": 620,
+          "size": 2,
+          "name": "Indirect Address 50",
+          "access": "RW",
+          "default": 655,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 50. Requires Protocol 2.0."
+        },
+        {
+          "address": 622,
+          "size": 2,
+          "name": "Indirect Address 51",
+          "access": "RW",
+          "default": 656,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 51. Requires Protocol 2.0."
+        },
+        {
+          "address": 624,
+          "size": 2,
+          "name": "Indirect Address 52",
+          "access": "RW",
+          "default": 657,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 52. Requires Protocol 2.0."
+        },
+        {
+          "address": 626,
+          "size": 2,
+          "name": "Indirect Address 53",
+          "access": "RW",
+          "default": 658,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 53. Requires Protocol 2.0."
+        },
+        {
+          "address": 628,
+          "size": 2,
+          "name": "Indirect Address 54",
+          "access": "RW",
+          "default": 659,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 54. Requires Protocol 2.0."
+        },
+        {
+          "address": 630,
+          "size": 2,
+          "name": "Indirect Address 55",
+          "access": "RW",
+          "default": 660,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 55. Requires Protocol 2.0."
+        },
+        {
+          "address": 632,
+          "size": 2,
+          "name": "Indirect Address 56",
+          "access": "RW",
+          "default": 661,
+          "range": [64, 661],
+          "unit": null,
+          "description": "Maps an arbitrary address to Indirect Data 56. Requires Protocol 2.0."
+        },
+        {
+          "address": 634,
+          "size": 1,
+          "name": "Indirect Data 29",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 29. Requires Protocol 2.0."
+        },
+        {
+          "address": 635,
+          "size": 1,
+          "name": "Indirect Data 30",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 30. Requires Protocol 2.0."
+        },
+        {
+          "address": 636,
+          "size": 1,
+          "name": "Indirect Data 31",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 31. Requires Protocol 2.0."
+        },
+        {
+          "address": 637,
+          "size": 1,
+          "name": "Indirect Data 32",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 32. Requires Protocol 2.0."
+        },
+        {
+          "address": 638,
+          "size": 1,
+          "name": "Indirect Data 33",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 33. Requires Protocol 2.0."
+        },
+        {
+          "address": 639,
+          "size": 1,
+          "name": "Indirect Data 34",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 34. Requires Protocol 2.0."
+        },
+        {
+          "address": 640,
+          "size": 1,
+          "name": "Indirect Data 35",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 35. Requires Protocol 2.0."
+        },
+        {
+          "address": 641,
+          "size": 1,
+          "name": "Indirect Data 36",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 36. Requires Protocol 2.0."
+        },
+        {
+          "address": 642,
+          "size": 1,
+          "name": "Indirect Data 37",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 37. Requires Protocol 2.0."
+        },
+        {
+          "address": 643,
+          "size": 1,
+          "name": "Indirect Data 38",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 38. Requires Protocol 2.0."
+        },
+        {
+          "address": 644,
+          "size": 1,
+          "name": "Indirect Data 39",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 39. Requires Protocol 2.0."
+        },
+        {
+          "address": 645,
+          "size": 1,
+          "name": "Indirect Data 40",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 40. Requires Protocol 2.0."
+        },
+        {
+          "address": 646,
+          "size": 1,
+          "name": "Indirect Data 41",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 41. Requires Protocol 2.0."
+        },
+        {
+          "address": 647,
+          "size": 1,
+          "name": "Indirect Data 42",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 42. Requires Protocol 2.0."
+        },
+        {
+          "address": 648,
+          "size": 1,
+          "name": "Indirect Data 43",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 43. Requires Protocol 2.0."
+        },
+        {
+          "address": 649,
+          "size": 1,
+          "name": "Indirect Data 44",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 44. Requires Protocol 2.0."
+        },
+        {
+          "address": 650,
+          "size": 1,
+          "name": "Indirect Data 45",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 45. Requires Protocol 2.0."
+        },
+        {
+          "address": 651,
+          "size": 1,
+          "name": "Indirect Data 46",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 46. Requires Protocol 2.0."
+        },
+        {
+          "address": 652,
+          "size": 1,
+          "name": "Indirect Data 47",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 47. Requires Protocol 2.0."
+        },
+        {
+          "address": 653,
+          "size": 1,
+          "name": "Indirect Data 48",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 48. Requires Protocol 2.0."
+        },
+        {
+          "address": 654,
+          "size": 1,
+          "name": "Indirect Data 49",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 49. Requires Protocol 2.0."
+        },
+        {
+          "address": 655,
+          "size": 1,
+          "name": "Indirect Data 50",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 50. Requires Protocol 2.0."
+        },
+        {
+          "address": 656,
+          "size": 1,
+          "name": "Indirect Data 51",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 51. Requires Protocol 2.0."
+        },
+        {
+          "address": 657,
+          "size": 1,
+          "name": "Indirect Data 52",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 52. Requires Protocol 2.0."
+        },
+        {
+          "address": 658,
+          "size": 1,
+          "name": "Indirect Data 53",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 53. Requires Protocol 2.0."
+        },
+        {
+          "address": 659,
+          "size": 1,
+          "name": "Indirect Data 54",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 54. Requires Protocol 2.0."
+        },
+        {
+          "address": 660,
+          "size": 1,
+          "name": "Indirect Data 55",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 55. Requires Protocol 2.0."
+        },
+        {
+          "address": 661,
+          "size": 1,
+          "name": "Indirect Data 56",
+          "access": "RW",
+          "default": 0,
+          "range": [0, 255],
+          "unit": null,
+          "description": "Data mapped via Indirect Address 56. Requires Protocol 2.0."
+        }
+      ]
+    }
+  ]
+}
