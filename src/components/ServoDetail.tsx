@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -25,6 +26,7 @@ interface ServoDetailProps {
   servo: ServoInfo;
   config: ConnectionConfig;
   onLoadingChange?: (loading: boolean) => void;
+  onServoUpdate?: (oldId: number, updated: ServoInfo) => void;
 }
 
 export interface ServoDetailHandle {
@@ -37,8 +39,14 @@ interface FieldState {
 }
 
 export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
-  function ServoDetail({ servo, config, onLoadingChange }, ref) {
+  function ServoDetail({ servo, config, onLoadingChange, onServoUpdate }, ref) {
     const model = getModel(servo.model_number);
+    const idAddress = useMemo(
+      () =>
+        model?.areas.flatMap((a) => a.fields).find((f) => f.name === "ID")
+          ?.address,
+      [model],
+    );
     const [fieldStates, setFieldStates] = useState<Record<number, FieldState>>(
       {},
     );
@@ -99,8 +107,15 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
           ...prev,
           [address]: { value, error: null },
         }));
+        // If the servo ID was changed, update parent state
+        if (idAddress !== undefined && address === idAddress) {
+          onServoUpdate?.(servo.id, {
+            ...servo,
+            id: value,
+          });
+        }
       },
-      [servo.id],
+      [servo, onServoUpdate, idAddress],
     );
 
     useImperativeHandle(ref, () => ({ refresh: loadControlTable }), [

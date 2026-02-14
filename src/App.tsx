@@ -85,6 +85,11 @@ function AppContent() {
     [],
   );
 
+  const handleServoUpdate = useCallback((oldId: number, updated: ServoInfo) => {
+    setServos((prev) => prev.map((s) => (s.id === oldId ? updated : s)));
+    setActiveServo((prev) => (prev?.id === oldId ? updated : prev));
+  }, []);
+
   if (showSettings) {
     return <SettingsPage onBack={toggleSettings} />;
   }
@@ -175,6 +180,7 @@ function AppContent() {
                 servo={activeServo}
                 config={connectionConfig}
                 onLoadingChange={setControlTableLoading}
+                onServoUpdate={handleServoUpdate}
               />
             ) : (
               <div className="flex flex-1 items-center justify-center">
