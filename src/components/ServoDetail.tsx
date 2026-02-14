@@ -258,7 +258,7 @@ export const ServoDetail = forwardRef<ServoDetailHandle, ServoDetailProps>(
                 value={fieldStates[goalVelocityField.address]?.value ?? 0}
                 min={goalVelocityField.range[0]}
                 max={goalVelocityField.range[1]}
-                unit="rev/min"
+                rawUnit={goalVelocityField.unit}
                 onWrite={(v) =>
                   handleWrite(
                     goalVelocityField.address,
