@@ -29,16 +29,11 @@ function formatValue(field: ModelField, value: number): string {
   return String(value);
 }
 
-/** Returns true if this field should use a select dropdown (small enumerable value_map with string labels). */
+/** Returns true if this field should use a select dropdown (small enumerable value_map). */
 function isSelectField(field: ModelField): boolean {
   if (!field.value_map) return false;
   const entries = Object.entries(field.value_map);
-  // Only use select for value maps with string labels (not numeric mappings like Baud Rate)
-  return (
-    entries.length > 0 &&
-    entries.length <= 20 &&
-    entries.every(([, v]) => typeof v === "string")
-  );
+  return entries.length > 0 && entries.length <= 20;
 }
 
 export function ControlTableValue({

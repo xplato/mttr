@@ -31,6 +31,10 @@ const BAUDRATE_OPTIONS = [
   { value: "57600", label: "57,600 bps" },
   { value: "115200", label: "115,200 bps" },
   { value: "1000000", label: "1,000,000 bps" },
+  { value: "2000000", label: "2,000,000 bps" },
+  { value: "3000000", label: "3,000,000 bps" },
+  { value: "4000000", label: "4,000,000 bps" },
+  { value: "4500000", label: "4,500,000 bps" },
 ];
 
 const PROTOCOL_OPTIONS = [
@@ -42,7 +46,7 @@ export function ScanForm({ onScanComplete }: ScanFormProps) {
   const [ports, setPorts] = useState<string[]>([]);
   const [selectedPort, setSelectedPort] = useState<string>("");
   const [protocol, setProtocol] = useState("2.0");
-  const [baudrate, setBaudrate] = useState("57600");
+  const [baudrate, setBaudrate] = useState("4500000");
   const [idStart, setIdStart] = useState(0);
   const [idEnd, setIdEnd] = useState(10);
   const [scanning, setScanning] = useState(false);
