@@ -15,8 +15,8 @@ export function ServoSidebar({
 }: ServoSidebarProps) {
   return (
     <div className="bg-background border-border flex h-full w-64 flex-col border-r select-none">
-      <div className="border-border flex shrink-0 items-center border-b px-3 py-2">
-        <p className="text-sidebar-foreground text-sm font-medium">Servos</p>
+      <div className="flex shrink-0 items-center px-3 pt-2">
+        <p className="text-sidebar-foreground text-base font-medium">Servos</p>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">
